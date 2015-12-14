@@ -20,6 +20,7 @@ public:
 	bool CleanUp();
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
+	void DrawMap();
 
 public:
 	/*
@@ -34,6 +35,35 @@ public:
 
 	Cube Road1;
 	Cube Road2;
+	Cube Road3;
+	Cube Road4;
+	Cube Road5;
+	Cube Road6;
+	Cube Road7;
+	Cube Road8;
+	Cube Road9;
+	Cube Road10;
+	Cube Road11;
+	Cube Road12;
+	Cube Road13;
+	Cube Road14;
+	Cube Road15;
+	Cube Road16;
+	Cube Road17;
+	Cube Road18;
+	Cube Road19;
+	Cube Road20;
+
+	Cylinder Cylinder_1;
+
+	Cube trailer_wall1;
+	Cube trailer_wall2;
+	Cube trailer_wall3;
+	Cube trailer_wall4;
+	
+	Cube s;
+	PhysBody3D* sensor;
+
 
 	PhysBody3D* pb_chassis;
 	Cube p_chassis;

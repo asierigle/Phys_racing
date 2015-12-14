@@ -33,7 +33,7 @@ bool ModulePlayer::Start()
 	front_car.maxSuspensionForce = 6000.0f;
 
 	// Wheel properties ---------------------------------------
-	float connection_height = 1.2f;
+	float connection_height = 1.5f;
 	float wheel_radius = 0.6f;
 	float wheel_width = 0.5f;
 	float suspensionRestLength = 1.2f;
@@ -74,11 +74,11 @@ bool ModulePlayer::Start()
 	front_car.wheels[1].steering = true;
 
 	front_truck = App->physics->AddVehicle(front_car);
-	front_truck->SetPos(0, 0, 0);
+	front_truck->SetPos(0, 21, 0);
 
 	// trailer properties ----------------------------------------
-	trailer_car.chassis_size.Set(3, 3, 6);
-	trailer_car.chassis_offset.Set(0, 2, 0);
+	trailer_car.chassis_size.Set(3, 1, 6);
+	trailer_car.chassis_offset.Set(0, 1, 0);
 	trailer_car.mass = 500.0f;
 	trailer_car.suspensionStiffness = 15.88f;
 	trailer_car.suspensionCompression = 0.83f;
@@ -105,7 +105,7 @@ bool ModulePlayer::Start()
 	trailer_car.wheels[0].front = false;
 	trailer_car.wheels[0].drive = false;
 	trailer_car.wheels[0].brake = false;
-	trailer_car.wheels[0].steering = true;
+	trailer_car.wheels[0].steering = false;
 
 	// FRONT-RIGHT ------------------------
 	trailer_car.wheels[1].connection.Set(-half_width + 0.3f * wheel_width, connection_height, wheel_radius + 1.5);
@@ -117,7 +117,7 @@ bool ModulePlayer::Start()
 	trailer_car.wheels[1].front = false;
 	trailer_car.wheels[1].drive = false;
 	trailer_car.wheels[1].brake = false;
-	trailer_car.wheels[1].steering = true;
+	trailer_car.wheels[1].steering = false;
 
 	trailer_car.wheels[2].connection.Set(half_width - 0.3f * wheel_width, connection_height, wheel_radius - 2);
 	trailer_car.wheels[2].direction = direction;
@@ -164,12 +164,15 @@ bool ModulePlayer::Start()
 	trailer_car.wheels[5].steering = false;
 
 	trailer = App->physics->AddVehicle(trailer_car);
-	trailer->SetPos(0, 0, -5);
+	trailer->SetPos(0, 21, -5);
+	App->camera->Follow(trailer, 5, 15, 1.8f);
+
+	
+	//Create the spheres of the trailer
+	CreateSphere(5, 1);
 
 
-	Sphere s1(1);
-	vehicle_sphere = App->physics->AddBody(s1);
-	vehicle_sphere->SetPos(0, 3, 0);
+
 	App->physics->AddConstraintHinge(*front_truck, *trailer, vec3(0, 2, -1), vec3(0, 2, 3), vec3(0,1,0), vec3(0,1,0), false);
 
 	//App->physics->AddConstraintP2P(*vehicle_sphere, *front_truck, vec3(0, 4, 0), vec3(0, 4, 0));
@@ -177,6 +180,22 @@ bool ModulePlayer::Start()
 	return true;
 }
 
+void ModulePlayer::CreateSphere(int quantity, int pos){
+
+	Sphere s1(0.7f);
+	float a = 0.5;
+	for (int i = 3; i <= quantity; i++)
+	{
+		for (int f = 4; f <= 6; f++)
+		{
+			vehicle_sphere = App->physics->AddBody(s1);
+			vehicle_sphere->SetPos(0 + (a / 2) - pos, f, -i);
+			a = a + 0.3;
+		}
+	}
+
+
+}
 // Unload assets
 bool ModulePlayer::CleanUp()
 {
@@ -192,7 +211,7 @@ update_status ModulePlayer::Update(float dt)
 
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
-		acceleration = MAX_ACCELERATION;
+		acceleration = MAX_ACCELERATION * 2;
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
@@ -216,6 +235,7 @@ update_status ModulePlayer::Update(float dt)
 	front_truck->Turn(turn);
 	front_truck->Brake(brake);
 
+	trailer->Render();
 	front_truck->Render();
 	char title[80];
 	sprintf_s(title, "%.1f Km/h", front_truck->GetKmh());
